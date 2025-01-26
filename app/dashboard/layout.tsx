@@ -10,7 +10,7 @@ import { SettingsModal } from "@/components/settings-dialog";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { DropdownMenuTrigger, DropdownMenu, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { NewRoadmapDialog } from "@/components/new-roadmap-dialog";
+import { NewRoadmapSheet } from "@/components/new-roadmap-dialog";
 import { Separator } from "@/components/ui/separator";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -24,11 +24,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <ProtectedRoute user={user} loading={loading}>
                         <SidebarProvider>
                                 <Sidebar variant="sidebar" collapsible="icon">
-                                        <SidebarContent className="bg-sidebar">
+                                        <SidebarContent className="bg-sidebar/10">
                                                 <SidebarHeader className="h-fit">
                                                         <DropdownMenu>
                                                                 <DropdownMenuTrigger asChild>
-                                                                        <SidebarMenuButton className="h-16 flex justify-between items-center">
+                                                                        <SidebarMenuButton size="lg" className="flex justify-between items-center">
                                                                                 <div className="flex items-center gap-3">
                                                                                         <Avatar className="rounded-sm">
                                                                                                 <AvatarFallback className="bg-primary/20 rounded-sm">WD</AvatarFallback>
@@ -56,7 +56,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                                                 </SidebarMenuButton>
                                                                         </DropdownMenuItem>
                                                                         <DropdownMenuItem asChild className="w-full">
-                                                                                <NewRoadmapDialog />
+                                                                                <NewRoadmapSheet />
                                                                         </DropdownMenuItem>
                                                                 </DropdownMenuContent>
                                                         </DropdownMenu>
@@ -95,14 +95,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                 </SidebarGroup>
                                         </SidebarContent>
                                         <SidebarFooter>
-                                                <SidebarMenuButton className="h-16 hover:bg-inherit focus:bg-inherit flex justify-between">
+                                                <SidebarMenuButton size="lg" className="hover:bg-inherit focus:bg-inherit flex justify-between">
                                                         <div className="flex gap-3 justify-between items-center">
                                                                 <Avatar>
                                                                         <AvatarFallback>{initials}</AvatarFallback>
                                                                 </Avatar>
                                                                 <div className="flex flex-col ">
                                                                         <h3 className="font-bold">Himanshu Sardana</h3>
-                                                                        <h3 className="text-muted-foreground">{email}</h3>
+                                                                        <h3 className="text-muted-foreground truncate">{email}</h3>
                                                                 </div>
                                                                 <DropdownMenu>
                                                                         <DropdownMenuTrigger>

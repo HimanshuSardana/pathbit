@@ -20,7 +20,7 @@ export function SettingsModal() {
                                 <ThemeToggleButton />
                                 <div className="flex justify-between">
                                         <h3>Dark Theme</h3>
-                                        <Switch id="theme" onCheckedChange={(e) => setTheme(theme === 'light' ? 'dark' : 'light')} />
+                                        <Switch id="theme" value={(theme == "dark").toString()} onCheckedChange={(e) => setTheme(theme === 'light' ? 'dark' : 'light')} />
                                 </div>
                         </DialogContent>
                 </Dialog>

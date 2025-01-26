@@ -1,0 +1,37 @@
+import React from 'react'
+import { SidebarMenuButton } from '@/components/ui/sidebar'
+import { Sheet, SheetHeader, SheetTitle, SheetContent, SheetFooter } from '@/components/ui/sheet'
+import { Button } from './ui/button'
+import { FloatingLabelInput } from './floating-label-input'
+import { Plus } from 'lucide-react'
+
+export function NewRoadmapDialog() {
+        return (
+                <Dialog>
+                        <DialogTrigger asChild>
+                                <SidebarMenuButton className="h-16 flex justify-start items-center gap-3">
+                                        <div className="w-fit h-fit border border-2 border-foreground/70 border-dashed p-2">
+                                                <Plus />
+                                        </div>
+                                        <h3>New Roadmap</h3>
+                                </SidebarMenuButton>
+                        </DialogTrigger>
+                        <DialogContent>
+                                <DialogHeader>
+                                        <DialogTitle>New Roadmap</DialogTitle>
+                                        <DialogDescription>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque iusto expedita ipsa laboriosam deserunt sed nulla illum doloribus ea rem?</DialogDescription>
+                                </DialogHeader>
+                                <div className="flex flex-col gap-3">
+                                        <FloatingLabelInput label="What skill would you like to learn?" />
+                                        <div className="flex gap-1 w-full justify-between">
+                                                <FloatingLabelInput className='w-full' label="Start Date" />
+                                                <FloatingLabelInput className='w-full' label="End Date" />
+                                        </div>
+                                </div>
+                                <DialogFooter>
+                                        <Button className='font-bold'><Plus /> Create</Button>
+                                </DialogFooter>
+                        </DialogContent>
+                </Dialog>
+        )
+}
