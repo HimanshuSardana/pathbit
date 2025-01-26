@@ -35,7 +35,6 @@ export default function RootLayout({
                                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                                         <NextTopLoader />
                                         <Toaster position="top-right" theme="dark" richColors />
-
                                         {children}
                                 </ThemeProvider>
                         </body>

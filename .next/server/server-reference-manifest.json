@@ -1,29 +1,5 @@
 {
   "node": {
-    "0d81ab76983e600a3ad3b35b8ffbe702d543b387": {
-      "workers": {
-        "app/login/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2Fhome%2Fhimanshu%2Fprojects%2Fpathbit%2Factions%2Flogin.ts%22%2C%5B%22default%22%5D%5D%2C%5B%22%2Fhome%2Fhimanshu%2Fprojects%2Fpathbit%2Factions%2Foauth.ts%22%2C%5B%22default%22%5D%5D%5D&__client_imported__=true!"
-      },
-      "layer": {
-        "app/login/page": "action-browser"
-      }
-    },
-    "3a86dad447a15c32b83d60d418327808604b73b7": {
-      "workers": {
-        "app/login/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2Fhome%2Fhimanshu%2Fprojects%2Fpathbit%2Factions%2Flogin.ts%22%2C%5B%22default%22%5D%5D%2C%5B%22%2Fhome%2Fhimanshu%2Fprojects%2Fpathbit%2Factions%2Foauth.ts%22%2C%5B%22default%22%5D%5D%5D&__client_imported__=true!"
-      },
-      "layer": {
-        "app/login/page": "action-browser"
-      }
-    },
-    "b79bb223eb07c06d705e1ede9009e5569981bff5": {
-      "workers": {
-        "app/dashboard/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2Fhome%2Fhimanshu%2Fprojects%2Fpathbit%2Factions%2Flogout.ts%22%2C%5B%22default%22%5D%5D%5D&__client_imported__=true!"
-      },
-      "layer": {
-        "app/dashboard/page": "action-browser"
-      }
-    },
     "b282b5cf185aae58edd241c6a6e1370558ca86fc": {
       "workers": {
         "app/dashboard/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2Fhome%2Fhimanshu%2Fprojects%2Fpathbit%2Factions%2Flogout.ts%22%2C%5B%22default%22%5D%5D%5D&__client_imported__=true!"
@@ -34,5 +10,5 @@
     }
   },
   "edge": {},
-  "encryptionKey": "CKuilE+cqGEMKzFelZpgh2YbjNlMXqc6zSio9PB9/wU="
+  "encryptionKey": "qSFlwo6AdGYc0W3LUDoT3Fbfim7xMaiyvzDQQkuWKvw="
 }
