@@ -4,37 +4,81 @@ import ProtectedRoute from "@/components/auth/protected-route-wrapper";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import logout from "@/actions/logout";
 import { usePathname } from "next/navigation";
-import { Blocks, Plus, ChevronDown, Users, Ellipsis } from 'lucide-react'
+import { Blocks, Plus, ChevronDown, Users, Ellipsis } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SidebarProvider, SidebarTrigger, Sidebar, SidebarContent, SidebarHeader, SidebarGroup, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarGroupLabel, SidebarGroupContent, SidebarFooter } from "@/components/ui/sidebar";
+import { Roadmap } from "@/components/roadmap";
+import {
+        SidebarProvider,
+        SidebarTrigger,
+        Sidebar,
+        SidebarContent,
+        SidebarHeader,
+        SidebarGroup,
+        SidebarMenu,
+        SidebarMenuItem,
+        SidebarMenuButton,
+        SidebarGroupLabel,
+        SidebarGroupContent,
+        SidebarFooter,
+} from "@/components/ui/sidebar";
 import { SettingsModal } from "@/components/settings-dialog";
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { DropdownMenuTrigger, DropdownMenu, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+        DropdownMenuTrigger,
+        DropdownMenu,
+        DropdownMenuContent,
+        DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import {
+        Dialog,
+        DialogTrigger,
+        DialogContent,
+        DialogHeader,
+        DialogTitle,
+        DialogFooter,
+} from "@/components/ui/dialog";
 import { NewRoadmapSheet } from "@/components/new-roadmap-dialog";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/utils/supabase/client";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-        const { user, loading } = useCurrentUser(); // Ensure proper type for 'user' (optional chaining or proper types for user fields)
-        const initials = user?.user_metadata?.name?.split(" ").map((name: string) => name.charAt(0).toUpperCase()).join("") ?? "";
-        const path = usePathname();
-        const email = user?.email ?? "No email"; // Safe fallback
-        const breadcrumbs = path.split("/").map((path) => path.charAt(0).toUpperCase() + path.slice(1)).slice(1);
+type Roadmap = {
+        id: number;
+        skill_name: string;
+        start_date: string;
+        end_date: string;
+        roadmap: Milestone[];
+};
 
-        const [roadmaps, setRoadmaps] = useState<any>([]);
+type Milestone = {
+        title: string;
+        description: string;
+};
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+        const { user, loading } = useCurrentUser();
+        const initials =
+                user?.user_metadata?.name
+                        ?.split(" ")
+                        .map((name: string) => name.charAt(0).toUpperCase())
+                        .join("") ?? "";
+        const path = usePathname();
+        const email = user?.email ?? "No email";
+        const breadcrumbs = path.split("/").map((p) => p.charAt(0).toUpperCase() + p.slice(1)).slice(1);
+
+        const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
+        const [selectedRoadmap, setSelectedRoadmap] = useState<number>(0);
 
         useEffect(() => {
-                if (!email || email === "No email") return; // Avoid fetching with invalid email
+                if (!email || email === "No email") return;
 
                 const fetchRoadmaps = async () => {
                         try {
                                 const client = await createClient();
-                                const { data, error } = await client.from("roadmaps").select("*")
+                                const { data, error } = await client.from("roadmaps").select("*");
                                 if (error) {
                                         console.error("Error fetching roadmaps:", error.message);
                                 } else {
-                                        setRoadmaps(data);
+                                        setRoadmaps(data || []);
                                 }
                         } catch (err) {
                                 console.error("Unexpected error fetching roadmaps:", err);
@@ -42,127 +86,65 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 };
 
                 fetchRoadmaps();
-        }, [email]); // Add 'email' and 'client' as dependencies
+        }, [email]);
 
+        const handleRoadmapSelect = (index: number) => {
+                setSelectedRoadmap(index);
+        };
 
         return (
                 <ProtectedRoute user={user} loading={loading}>
                         <SidebarProvider>
                                 <Sidebar variant="sidebar" collapsible="icon">
                                         <SidebarContent className="bg-sidebar/10">
-                                                <SidebarHeader className="h-fit">
+                                                <SidebarHeader className="py-3">
                                                         <DropdownMenu>
-                                                                {roadmaps.length === 0 ? (
-                                                                        // Case: No roadmaps, show only NewRoadmapSheet
-                                                                        <DropdownMenuTrigger asChild>
-                                                                                <SidebarMenuButton size="lg" className="flex justify-between items-center">
-                                                                                        <div className="flex items-center gap-3">
-                                                                                                <Avatar className="rounded-sm">
-                                                                                                        <AvatarFallback className="bg-primary/20 rounded-sm">NR</AvatarFallback>
-                                                                                                </Avatar>
-                                                                                                <div className="flex flex-col">
-                                                                                                        <h3 className="font-bold">New Roadmap</h3>
-                                                                                                        <h3 className="text-sm text-muted-foreground">Create your first roadmap</h3>
-                                                                                                </div>
-                                                                                        </div>
-                                                                                </SidebarMenuButton>
-                                                                        </DropdownMenuTrigger>
-                                                                ) : roadmaps.length === 1 ? (
-                                                                        // Case: One roadmap, use it as the dropdown trigger
-                                                                        <DropdownMenuTrigger asChild>
-                                                                                <SidebarMenuButton size="lg" className="flex justify-between items-center">
-                                                                                        <div className="flex items-center gap-3">
-                                                                                                <Avatar className="rounded-sm">
-                                                                                                        <AvatarFallback className="bg-primary/20 rounded-sm">
-                                                                                                                {roadmaps[0].skill_name
-                                                                                                                        .split(" ")
-                                                                                                                        .map((word: string) => word.charAt(0).toUpperCase())
-                                                                                                                        .join("")}
-                                                                                                        </AvatarFallback>
-                                                                                                </Avatar>
-                                                                                                <div className="flex flex-col">
-                                                                                                        <h3 className="font-bold">{roadmaps[0].skill_name}</h3>
-                                                                                                        <h3 className="text-sm text-muted-foreground">
-                                                                                                                {`${new Date(roadmaps[0].start_date).toLocaleDateString("en-US", {
-                                                                                                                        day: "2-digit",
-                                                                                                                        month: "short",
-                                                                                                                })} - ${new Date(roadmaps[0].end_date).toLocaleDateString("en-US", {
-                                                                                                                        day: "2-digit",
-                                                                                                                        month: "short",
-                                                                                                                })}`}
-                                                                                                        </h3>
-                                                                                                </div>
-                                                                                                <span className="text-xs">
-                                                                                                        <ChevronDown size={16} />
-                                                                                                </span>
-                                                                                        </div>
-                                                                                </SidebarMenuButton>
-                                                                        </DropdownMenuTrigger>
-                                                                ) : (
-                                                                        // Case: Multiple roadmaps
-                                                                        <DropdownMenuTrigger asChild>
-                                                                                <SidebarMenuButton size="lg" className="flex justify-between items-center">
-                                                                                        <div className="flex items-center gap-3">
-                                                                                                <Avatar className="rounded-sm">
-                                                                                                        <AvatarFallback className="bg-primary/20 rounded-sm">WD</AvatarFallback>
-                                                                                                </Avatar>
-                                                                                                <div className="flex flex-col">
-                                                                                                        <h3 className="font-bold">Web Development</h3>
-                                                                                                        <h3 className="text-sm text-muted-foreground">24th Jan - 24th Feb</h3>
-                                                                                                </div>
-                                                                                        </div>
-                                                                                        <span className="text-xs">
-                                                                                                <ChevronDown size={16} />
-                                                                                        </span>
-                                                                                </SidebarMenuButton>
-                                                                        </DropdownMenuTrigger>
-                                                                )}
-                                                                {roadmaps.length > 0 && (
-                                                                        <DropdownMenuContent className="w-56">
-                                                                                {roadmaps.map((roadmap: any) => {
-                                                                                        const initials = roadmap.skill_name
-                                                                                                .split(" ")
-                                                                                                .map((word: string) => word.charAt(0).toUpperCase())
-                                                                                                .join("");
-
-                                                                                        const startDate = new Date(roadmap.start_date).toLocaleDateString("en-US", {
-                                                                                                day: "2-digit",
-                                                                                                month: "short",
-                                                                                        });
-                                                                                        const endDate = new Date(roadmap.end_date).toLocaleDateString("en-US", {
-                                                                                                day: "2-digit",
-                                                                                                month: "short",
-                                                                                        });
-
-                                                                                        return (
-                                                                                                <DropdownMenuItem key={roadmap.id} asChild className="w-full">
-                                                                                                        <SidebarMenuButton className="h-16 flex justify-between items-center">
-                                                                                                                <div className="flex items-center gap-3">
-                                                                                                                        <Avatar className="rounded-sm">
-                                                                                                                                <AvatarFallback className="bg-primary/20 rounded-sm">{initials}</AvatarFallback>
-                                                                                                                        </Avatar>
-                                                                                                                        <div className="flex flex-col">
-                                                                                                                                <h3 className="font-bold">{roadmap.skill_name}</h3>
-                                                                                                                                <h3 className="text-sm text-muted-foreground">{`${startDate} - ${endDate}`}</h3>
-                                                                                                                        </div>
-                                                                                                                </div>
-                                                                                                        </SidebarMenuButton>
-                                                                                                </DropdownMenuItem>
-                                                                                        );
-                                                                                })}
-                                                                                <DropdownMenuItem asChild className="w-full">
-                                                                                        <NewRoadmapSheet />
-                                                                                </DropdownMenuItem>
+                                                                <DropdownMenuTrigger className="">
+                                                                        {roadmaps.length === 0 ? (
+                                                                                <CourseButton
+                                                                                        skill_name="No Roadmaps"
+                                                                                        start_date="N/A"
+                                                                                        end_date="N/A"
+                                                                                        disabled={true}
+                                                                                        onClick={() => { }}
+                                                                                />
+                                                                        ) : (
+                                                                                <CourseButton
+                                                                                        skill_name={roadmaps[selectedRoadmap]?.skill_name || "No Roadmap"}
+                                                                                        start_date={roadmaps[selectedRoadmap]?.start_date || "N/A"}
+                                                                                        end_date={roadmaps[selectedRoadmap]?.end_date || "N/A"}
+                                                                                        disabled={false}
+                                                                                        onClick={() => { }}
+                                                                                />
+                                                                        )}
+                                                                </DropdownMenuTrigger>
+                                                                {roadmaps.length > 1 && (
+                                                                        <DropdownMenuContent>
+                                                                                {roadmaps.map((roadmap, index) => (
+                                                                                        <DropdownMenuItem key={roadmap.id}>
+                                                                                                <CourseButton
+                                                                                                        skill_name={roadmap.skill_name}
+                                                                                                        start_date={roadmap.start_date}
+                                                                                                        end_date={roadmap.end_date}
+                                                                                                        disabled={index === selectedRoadmap}
+                                                                                                        onClick={() => handleRoadmapSelect(index)}
+                                                                                                />
+                                                                                        </DropdownMenuItem>
+                                                                                ))}
+                                                                                <NewRoadmapSheet />
                                                                         </DropdownMenuContent>
                                                                 )}
                                                         </DropdownMenu>
-
                                                 </SidebarHeader>
                                                 <SidebarGroup>
                                                         <SidebarGroupLabel>Account</SidebarGroupLabel>
                                                         <SidebarGroupContent>
-                                                                <SidebarMenu >
-                                                                        <SidebarMenuItem><SidebarMenuButton tooltip={"Dashboard"}><Blocks /> Dashboard</SidebarMenuButton></SidebarMenuItem>
+                                                                <SidebarMenu>
+                                                                        <SidebarMenuItem>
+                                                                                <SidebarMenuButton tooltip={"Dashboard"}>
+                                                                                        <Blocks /> Dashboard
+                                                                                </SidebarMenuButton>
+                                                                        </SidebarMenuItem>
                                                                         <SidebarMenuItem>
                                                                                 <SidebarMenuButton tooltip={"Communities"}>
                                                                                         <Users /> Communities
@@ -178,15 +160,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                         <SidebarGroupLabel>Roadmap</SidebarGroupLabel>
                                                         <SidebarGroupContent>
                                                                 <SidebarMenu>
-                                                                        <SidebarMenuItem>
-                                                                                <SidebarMenuButton className="text-center">1</SidebarMenuButton>
-                                                                                <SidebarMenuButton disabled className="text-center">2</SidebarMenuButton>
-                                                                                <SidebarMenuButton disabled className="text-center">3</SidebarMenuButton>
-                                                                                <SidebarMenuButton disabled className="text-center">4</SidebarMenuButton>
-                                                                                <SidebarMenuButton disabled className="text-center">5</SidebarMenuButton>
-                                                                                <SidebarMenuButton disabled className="text-center">6</SidebarMenuButton>
-                                                                                <SidebarMenuButton disabled className="text-center">7</SidebarMenuButton>
-                                                                        </SidebarMenuItem>
                                                                 </SidebarMenu>
                                                         </SidebarGroupContent>
                                                 </SidebarGroup>
@@ -197,8 +170,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                                 <Avatar>
                                                                         <AvatarFallback>{initials}</AvatarFallback>
                                                                 </Avatar>
-                                                                <div className="flex flex-col ">
-                                                                        <h3 className="font-bold">Himanshu Sardana</h3>
+                                                                <div className="flex flex-col">
+                                                                        <h3 className="font-bold">{user?.user_metadata?.name || "User"}</h3>
                                                                         <h3 className="text-muted-foreground truncate">{email}</h3>
                                                                 </div>
                                                                 <DropdownMenu>
@@ -225,12 +198,57 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                         <h3>Dashboard</h3>
                                                 </div>
                                         </div>
-                                        <div className="px-3">
+                                        <div className="p-3 px-10">
+                                                {roadmaps && <Roadmap data={roadmaps[selectedRoadmap]} />}
                                                 {children}
                                         </div>
                                 </main>
                         </SidebarProvider>
                 </ProtectedRoute>
+        );
+}
+
+type CourseButtonProps = {
+        skill_name: string;
+        start_date: string;
+        end_date: string;
+        disabled: boolean;
+        onClick: () => void;
+};
+
+function CourseButton({ skill_name, start_date, end_date, disabled, onClick }: CourseButtonProps) {
+        return (
+                <SidebarMenuButton
+                        size="lg"
+                        className="w-full h-fit flex justify-between items-center"
+                        onClick={onClick}
+                        disabled={disabled}
+                >
+                        <div className="flex items-center gap-3">
+                                <Avatar className="rounded-sm">
+                                        <AvatarFallback className="bg-primary/20 rounded-sm">
+                                                {skill_name
+                                                        .split(" ")
+                                                        .map((word) => word.charAt(0).toUpperCase())
+                                                        .join("")}
+                                        </AvatarFallback>
+                                </Avatar>
+                                <div className="flex flex-col">
+                                        <h3 className="font-bold">{skill_name}</h3>
+                                        <h3 className="text-sm text-muted-foreground">
+                                                {start_date !== "N/A" && end_date !== "N/A"
+                                                        ? `${new Date(start_date).toLocaleDateString("en-US", {
+                                                                day: "2-digit",
+                                                                month: "short",
+                                                        })} - ${new Date(end_date).toLocaleDateString("en-US", {
+                                                                day: "2-digit",
+                                                                month: "short",
+                                                        })}`
+                                                        : "No Dates"}
+                                        </h3>
+                                </div>
+                        </div>
+                </SidebarMenuButton>
         );
 }
 
