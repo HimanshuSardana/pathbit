@@ -1,42 +1,67 @@
-import React, { useState, useTransition } from 'react'
+import React, { useState, useTransition, useEffect } from 'react'
 import { SidebarMenuButton } from '@/components/ui/sidebar'
-import { Sheet, SheetTrigger, SheetDescription, SheetHeader, SheetTitle, SheetContent, SheetFooter } from '@/components/ui/sheet'
+import {
+        Sheet,
+        SheetTrigger,
+        SheetDescription,
+        SheetHeader,
+        SheetTitle,
+        SheetContent,
+        SheetFooter,
+} from '@/components/ui/sheet'
 import { Button } from './ui/button'
 import { FloatingLabelInput } from './floating-label-input'
 import { FloatingLabelTextarea } from './floating-label-textarea'
 import { Plus } from 'lucide-react'
 import { generateRoadmap } from '@/actions/generate_roadmap'
 import { LoadingButton } from './ui/loading-button'
+import { toast } from 'sonner'
+import useCurrentUser from '@/hooks/useCurrentUser'
 
 export function NewRoadmapSheet() {
+        const { user } = useCurrentUser()
         const [formData, setFormData] = useState({
+                email: '',
                 skillName: '',
                 startDate: '',
                 endDate: '',
                 prereqKnowledge: '',
-        });
+        })
 
-        const [isPending, startTransition] = useTransition();
+        useEffect(() => {
+                if (user) {
+                        setFormData((prev: any) => ({
+                                ...prev,
+                                email: user.email,
+                        }))
+                }
+        }, [user])
 
-        const handleInputChange = (e: any) => {
-                const { name, value } = e.target;
+        const [isPending, startTransition] = useTransition()
+
+        const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                const { name, value } = e.target
                 setFormData((prev) => ({
                         ...prev,
                         [name]: value,
-                }));
-        };
+                }))
+        }
 
         const handleSubmit = () => {
                 startTransition(async () => {
                         try {
-                                const result = await generateRoadmap(formData);
-                                console.log('Roadmap created successfully:', result);
-                                // Optionally clear form fields or provide feedback here
+                                const result = await generateRoadmap(formData)
+                                if (result.success) {
+                                        toast.success(result.message)
+                                } else {
+                                        toast.error(result.message)
+                                }
                         } catch (error) {
-                                console.error('Error creating roadmap:', error);
+                                console.error('Error creating roadmap:', error)
+                                toast.error('Failed to create roadmap. Please try again.')
                         }
-                });
-        };
+                })
+        }
 
         return (
                 <Sheet>
@@ -51,7 +76,10 @@ export function NewRoadmapSheet() {
                         <SheetContent>
                                 <SheetHeader className="mb-5">
                                         <SheetTitle>New Roadmap</SheetTitle>
-                                        <SheetDescription>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque iusto expedita ipsa laboriosam deserunt sed nulla illum doloribus ea rem?</SheetDescription>
+                                        <SheetDescription>
+                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque iusto
+                                                expedita ipsa laboriosam deserunt sed nulla illum doloribus ea rem?
+                                        </SheetDescription>
                                 </SheetHeader>
                                 <div className="flex flex-col gap-3">
                                         <FloatingLabelInput
@@ -101,6 +129,5 @@ export function NewRoadmapSheet() {
                                 </SheetFooter>
                         </SheetContent>
                 </Sheet>
-        );
+        )
 }
-
