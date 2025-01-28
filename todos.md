@@ -1,5 +1,5 @@
 ### Brainstorming
-- [ ] Roadmap Generator
+- [x] Roadmap Generator
 - [ ] Relevant Communities
 - [ ] Leaderboard
 - [ ] Group Projects

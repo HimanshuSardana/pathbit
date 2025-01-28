@@ -1,5 +1,6 @@
-import React, { useState, useTransition, useEffect } from 'react'
-import { SidebarMenuButton } from '@/components/ui/sidebar'
+"use client"
+import { useState, useTransition, useEffect } from "react";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
 import {
         Sheet,
         SheetTrigger,
@@ -8,60 +9,69 @@ import {
         SheetTitle,
         SheetContent,
         SheetFooter,
-} from '@/components/ui/sheet'
-import { Button } from './ui/button'
-import { FloatingLabelInput } from './floating-label-input'
-import { FloatingLabelTextarea } from './floating-label-textarea'
-import { Plus } from 'lucide-react'
-import { generateRoadmap } from '@/actions/generate_roadmap'
-import { LoadingButton } from './ui/loading-button'
-import { toast } from 'sonner'
-import useCurrentUser from '@/hooks/useCurrentUser'
+} from "@/components/ui/sheet";
+import { Button } from "./ui/button";
+import { FloatingLabelInput } from "./floating-label-input";
+import { FloatingLabelTextarea } from "./floating-label-textarea";
+import { Plus } from "lucide-react";
+import { generateRoadmap } from "@/actions/generate_roadmap";
+import { LoadingButton } from "./ui/loading-button";
+import { toast } from "sonner";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { DateRangePicker } from "./ui/date-range-picker";
 
 export function NewRoadmapSheet() {
-        const { user } = useCurrentUser()
+        const { user } = useCurrentUser();
         const [formData, setFormData] = useState({
-                email: '',
-                skillName: '',
-                startDate: '',
-                endDate: '',
-                prereqKnowledge: '',
-        })
+                email: "",
+                skillName: "",
+                startDate: "",
+                endDate: "",
+                prereqKnowledge: "",
+        });
 
         useEffect(() => {
                 if (user) {
                         setFormData((prev: any) => ({
                                 ...prev,
                                 email: user.email,
-                        }))
+                        }));
                 }
-        }, [user])
+        }, [user]);
 
-        const [isPending, startTransition] = useTransition()
+        const [isPending, startTransition] = useTransition();
 
         const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-                const { name, value } = e.target
+                const { name, value } = e.target;
                 setFormData((prev) => ({
                         ...prev,
                         [name]: value,
-                }))
-        }
+                }));
+        };
+
+        const handleDateRangeChange = (range: { from: string; to: string }) => {
+                setFormData((prev) => ({
+                        ...prev,
+                        startDate: range.from,
+                        endDate: range.to,
+                }));
+        };
 
         const handleSubmit = () => {
                 startTransition(async () => {
                         try {
-                                const result = await generateRoadmap(formData)
+                                const result = await generateRoadmap(formData);
                                 if (result.success) {
-                                        toast.success(result.message)
+                                        toast.success(result.message);
                                 } else {
-                                        toast.error(result.message)
+                                        toast.error(result.message);
                                 }
                         } catch (error) {
-                                console.error('Error creating roadmap:', error)
-                                toast.error('Failed to create roadmap. Please try again.')
+                                console.error("Error creating roadmap:", error);
+                                toast.error("Failed to create roadmap. Please try again.");
                         }
-                })
-        }
+                });
+        };
 
         return (
                 <Sheet>
@@ -77,8 +87,7 @@ export function NewRoadmapSheet() {
                                 <SheetHeader className="mb-5">
                                         <SheetTitle>New Roadmap</SheetTitle>
                                         <SheetDescription>
-                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque iusto
-                                                expedita ipsa laboriosam deserunt sed nulla illum doloribus ea rem?
+                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque iusto expedita ipsa laboriosam deserunt sed nulla illum doloribus ea rem?
                                         </SheetDescription>
                                 </SheetHeader>
                                 <div className="flex flex-col gap-3">
@@ -90,23 +99,9 @@ export function NewRoadmapSheet() {
                                                 label="What skill would you like to learn?"
                                         />
                                         <div className="flex gap-1 w-full justify-between">
-                                                <FloatingLabelInput
-                                                        type="date"
-                                                        name="startDate"
-                                                        disabled={isPending}
-                                                        value={formData.startDate}
-                                                        onChange={handleInputChange}
-                                                        className="w-full"
-                                                        label="Start Date"
-                                                />
-                                                <FloatingLabelInput
-                                                        type="date"
-                                                        name="endDate"
-                                                        value={formData.endDate}
-                                                        disabled={isPending}
-                                                        onChange={handleInputChange}
-                                                        className="w-full"
-                                                        label="End Date"
+                                                <DateRangePicker
+                                                        value={{ from: formData.startDate, to: formData.endDate }}
+                                                        onChange={handleDateRangeChange}
                                                 />
                                         </div>
                                         <FloatingLabelTextarea
@@ -129,5 +124,5 @@ export function NewRoadmapSheet() {
                                 </SheetFooter>
                         </SheetContent>
                 </Sheet>
-        )
+        );
 }
