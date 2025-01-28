@@ -47,7 +47,7 @@ export function Roadmap({ data }: { data: any }) {
 
                                                 <div className='flex flex-col my-2'>
                                                         <h3 className='font-bold text-xl'>Resources</h3>
-                                                        <div className="flex gap-3 mt-2">
+                                                        <div className="flex gap-3 mt-2 xs:flex-col md:flex-row">
                                                                 {roadmap[currentDay].resources.map((resource: any, index: number) => {
                                                                         return (
                                                                                 <div className="bg-card w-fit px-5 py-5 rounded-md">

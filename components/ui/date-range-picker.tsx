@@ -13,24 +13,26 @@ import {
         PopoverTrigger,
 } from "@/components/ui/popover";
 
+import { DateRange } from "react-day-picker"; // Import DateRange from react-day-picker
+
 type DateRangePickerProps = {
         value: { from: string; to: string }; // Dates as strings in "yyyy-MM-dd" format
         onChange: (range: { from: string; to: string }) => void; // Callback to update parent state
 };
 
 export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
-        const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({
-                from: value.from ? new Date(value.from) : null,
-                to: value.to ? new Date(value.to) : null,
+        const [dateRange, setDateRange] = useState<DateRange>({
+                from: value.from ? new Date(value.from) : undefined,
+                to: value.to ? new Date(value.to) : undefined,
         });
 
-        const handleDateChange = (range: { from: Date | null; to: Date | null }) => {
-                setDateRange(range);
+        const handleDateChange = (range: DateRange | undefined) => {
+                setDateRange(range || { from: undefined, to: undefined });
 
                 // Convert dates to "yyyy-MM-dd" format and update parent state
                 onChange({
-                        from: range.from ? format(range.from, "yyyy-MM-dd") : "",
-                        to: range.to ? format(range.to, "yyyy-MM-dd") : "",
+                        from: range?.from ? format(range.from, "yyyy-MM-dd") : "",
+                        to: range?.to ? format(range.to, "yyyy-MM-dd") : "",
                 });
         };
 
@@ -42,10 +44,10 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
                                         variant={"outline"}
                                         className={cn(
                                                 "w-full justify-between text-left font-normal",
-                                                !dateRange.from && "text-muted-foreground"
+                                                !dateRange?.from && "text-muted-foreground"
                                         )}
                                 >
-                                        {dateRange.from ? (
+                                        {dateRange?.from ? (
                                                 dateRange.to ? (
                                                         `${format(dateRange.from, "LLL dd, y")} - ${format(dateRange.to, "LLL dd, y")}`
                                                 ) : (
