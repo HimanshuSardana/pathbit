@@ -9,7 +9,7 @@ export function NewRoadmapDialog() {
         return (
                 <Dialog>
                         <DialogTrigger asChild>
-                                <SidebarMenuButton className="h-16 flex justify-start items-center gap-3">
+                                <SidebarMenuButton className="flex justify-start items-center gap-3">
                                         <div className="w-fit h-fit border border-2 border-foreground/70 border-dashed p-2">
                                                 <Plus />
                                         </div>

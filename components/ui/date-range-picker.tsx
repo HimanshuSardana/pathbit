@@ -29,7 +29,6 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
         const handleDateChange = (range: DateRange | undefined) => {
                 setDateRange(range || { from: undefined, to: undefined });
 
-                // Convert dates to "yyyy-MM-dd" format and update parent state
                 onChange({
                         from: range?.from ? format(range.from, "yyyy-MM-dd") : "",
                         to: range?.to ? format(range.to, "yyyy-MM-dd") : "",
@@ -65,6 +64,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
                                         mode="range"
                                         selected={dateRange}
                                         onSelect={handleDateChange}
+                                        disabled={(date) => date < new Date()}
                                         numberOfMonths={1}
                                 />
                         </PopoverContent>
