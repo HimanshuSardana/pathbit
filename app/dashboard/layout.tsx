@@ -118,7 +118,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                                                 />
                                                                         )}
                                                                 </DropdownMenuTrigger>
-                                                                {roadmaps.length > 1 && (
+                                                                {roadmaps.length >= 1 && (
                                                                         <DropdownMenuContent>
                                                                                 {roadmaps.map((roadmap, index) => (
                                                                                         <DropdownMenuItem key={roadmap.id}>

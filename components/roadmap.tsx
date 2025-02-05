@@ -8,6 +8,7 @@ import {
 } from "./ui/accordion";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { NewRoadmapSheet } from "./new-roadmap-dialog";
 import { Trash, ArrowLeft, Loader2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -30,6 +31,7 @@ import {
 import { generateQuestions } from "@/actions/generate_questions";
 import { FloatingLabelTextarea } from "./floating-label-textarea";
 import { checkAnswers } from "@/actions/check_answers";
+import { revalidatePath } from "next/cache";
 
 export function Roadmap({ data }: { data: any }) {
         const handleDelete = async (id: number) => {
@@ -45,7 +47,14 @@ export function Roadmap({ data }: { data: any }) {
         };
 
         if (!data) {
-                return <p className="text-muted-foreground">No roadmap selected.</p>; // Fallback message
+                return (
+                        <>
+                                <div className="flex flex-col">
+                                        <p className="text-muted-foreground">No roadmap selected.</p>
+                                        <NewRoadmapSheet />
+                                </div>
+                        </>
+                )
         }
 
         const roadmap = JSON.parse(data.roadmap);
