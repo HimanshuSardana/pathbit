@@ -1,5 +1,7 @@
 "use client";
+import { CommunityCard } from "@/components/communities/community_card";
 import React, { useState, useEffect } from "react";
+import { NewCommunityDialog } from "@/components/new-community-dialog";
 import ProtectedRoute from "@/components/auth/protected-route-wrapper";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import logout from "@/actions/logout";
@@ -40,6 +42,8 @@ import {
 import { NewRoadmapSheet } from "@/components/new-roadmap-dialog";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/utils/supabase/client";
+import { FloatingLabelInput } from "@/components/floating-label-input";
+import { FloatingLabelTextarea } from "@/components/floating-label-textarea";
 
 type Roadmap = {
         id: number;
@@ -88,6 +92,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 fetchRoadmaps();
         }, [email]);
 
+        useEffect(() => {
+                // fetch communities
+                const fetchCommunities = async () => {
+                        // Fetch communities
+                }
+        })
+
         const handleRoadmapSelect = (index: number) => {
                 setSelectedRoadmap(index);
         };
@@ -96,7 +107,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <ProtectedRoute user={user} loading={loading}>
                         <SidebarProvider>
                                 <Sidebar variant="sidebar" collapsible="icon">
-                                        <SidebarContent className="bg-sidebar/10">
+                                        <SidebarContent className="bg-sidebar-accent/50">
                                                 <SidebarHeader className="py-3">
                                                         <DropdownMenu>
                                                                 <DropdownMenuTrigger className="">
@@ -146,26 +157,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                                                 </SidebarMenuButton>
                                                                         </SidebarMenuItem>
                                                                         <SidebarMenuItem>
-                                                                                <SidebarMenuButton tooltip={"Communities"}>
-                                                                                        <Users /> Communities
-                                                                                </SidebarMenuButton>
-                                                                        </SidebarMenuItem>
-                                                                        <SidebarMenuItem>
                                                                                 <SettingsModal />
                                                                         </SidebarMenuItem>
                                                                 </SidebarMenu>
                                                         </SidebarGroupContent>
                                                 </SidebarGroup>
                                                 <SidebarGroup>
-                                                        <SidebarGroupLabel>Roadmap</SidebarGroupLabel>
+                                                        <SidebarGroupLabel>Communities</SidebarGroupLabel>
                                                         <SidebarGroupContent>
                                                                 <SidebarMenu>
+                                                                        <SidebarMenuItem>
+                                                                                <SidebarMenuButton><Users /> ML Engg2</SidebarMenuButton>
+                                                                        </SidebarMenuItem>
+                                                                        <SidebarMenuItem>
+                                                                                <NewCommunityDialog email={email} />
+                                                                        </SidebarMenuItem>
                                                                 </SidebarMenu>
                                                         </SidebarGroupContent>
                                                 </SidebarGroup>
                                         </SidebarContent>
-                                        <SidebarFooter>
-                                                <SidebarMenuButton size="lg" className="hover:bg-inherit focus:bg-inherit flex justify-between">
+                                        <SidebarFooter className="bg-sidebar-accent/50">
+                                                <SidebarMenuButton size="lg" className="focus:bg-inherit flex justify-between">
                                                         <div className="flex gap-3 justify-between items-center">
                                                                 <Avatar>
                                                                         <AvatarFallback>{initials}</AvatarFallback>
@@ -181,6 +193,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                                                 </Button>
                                                                         </DropdownMenuTrigger>
                                                                         <DropdownMenuContent>
+                                                                                <DropdownMenuItem>
+                                                                                        My Profile
+                                                                                </DropdownMenuItem>
                                                                                 <DropdownMenuItem className="text-red-500" onClick={() => logout()}>
                                                                                         Log Out
                                                                                 </DropdownMenuItem>
@@ -192,10 +207,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 </Sidebar>
                                 <main className="w-full">
                                         <div className="nav w-full px-3 h-16 flex items-center">
-                                                <div className="flex flex-row gap-3">
+                                                <div className="flex flex-row gap-3 items-center">
                                                         <SidebarTrigger />
                                                         <Separator orientation="vertical" />
-                                                        <h3>Dashboard</h3>
+                                                        <h3 className="text-sm font-bold">Dashboard</h3>
                                                 </div>
                                         </div>
                                         <div className="p-3 px-10">

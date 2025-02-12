@@ -12,6 +12,7 @@ import { NewRoadmapSheet } from "./new-roadmap-dialog";
 import { Trash, ArrowLeft, Loader2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
+import { Carousel, CarouselItem, CarouselContent, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
         Dialog,
         DialogTrigger,
@@ -129,24 +130,32 @@ export function Roadmap({ data }: { data: any }) {
                                                 <div className="flex flex-col my-2">
                                                         <h3 className="font-bold text-xl">Resources</h3>
                                                         <div className="flex gap-3 mt-2 xs:flex-col md:flex-row">
-                                                                {roadmap[currentDay].resources.map(
-                                                                        (resource: any, index: number) => {
-                                                                                return (
-                                                                                        <div
-                                                                                                className="bg-card w-fit px-5 py-5 rounded-md"
-                                                                                                key={index}
-                                                                                        >
-                                                                                                <h3 className="font-bold text-xl">{resource.name}</h3>
-                                                                                                <Link
-                                                                                                        href={resource.link}
-                                                                                                        className="text-muted-foreground"
-                                                                                                >
-                                                                                                        {resource.link}
-                                                                                                </Link>
-                                                                                        </div>
-                                                                                );
-                                                                        }
-                                                                )}
+                                                                <Carousel>
+                                                                        <CarouselContent>
+                                                                                {roadmap[currentDay].resources.map(
+                                                                                        (resource: any, index: number) => {
+                                                                                                return (
+                                                                                                        <CarouselItem className="sm:basis-1 md:basis-1/3">
+                                                                                                                <div
+                                                                                                                        className="bg-accent/40 w-fit p-5 rounded-md"
+                                                                                                                        key={index}
+                                                                                                                >
+                                                                                                                        <h3 className="font-bold text-xl">{resource.name}</h3>
+                                                                                                                        <Link
+                                                                                                                                href={resource.link}
+                                                                                                                                className="text-muted-foreground"
+                                                                                                                        >
+                                                                                                                                {resource.link}
+                                                                                                                        </Link>
+                                                                                                                </div>
+                                                                                                        </CarouselItem>
+                                                                                                );
+                                                                                        }
+                                                                                )}
+                                                                        </CarouselContent>
+                                                                        <CarouselNext />
+                                                                        <CarouselPrevious />
+                                                                </Carousel>
                                                         </div>
                                                 </div>
 
