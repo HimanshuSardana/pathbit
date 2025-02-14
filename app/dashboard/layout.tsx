@@ -1,5 +1,6 @@
 "use client";
 import { CommunityCard } from "@/components/communities/community_card";
+import { motion } from 'motion/react'
 import React, { useState, useEffect } from "react";
 import { NewCommunityDialog } from "@/components/new-community-dialog";
 import ProtectedRoute from "@/components/auth/protected-route-wrapper";
@@ -230,10 +231,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                         <h3 className="text-sm font-bold">Dashboard</h3>
                                                 </div>
                                         </div>
-                                        <div className="p-3 px-10">
+                                        <motion.div className="p-3 px-10" layout>
                                                 {(roadmaps && path.endsWith("dashboard")) && <Roadmap data={roadmaps[selectedRoadmap]} />}
                                                 {children}
-                                        </div>
+                                        </motion.div>
                                 </main>
                         </SidebarProvider>
                 </ProtectedRoute>

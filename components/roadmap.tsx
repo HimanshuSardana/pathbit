@@ -7,9 +7,10 @@ import {
         AccordionTrigger,
 } from "./ui/accordion";
 import Link from "next/link";
+import { motion } from 'motion/react'
 import { Button } from "./ui/button";
 import { NewRoadmapSheet } from "./new-roadmap-dialog";
-import { Lock, Unlock } from "lucide-react";
+import { ChevronRight, Lock, Unlock, ChevronLeft } from "lucide-react";
 import { Trash, ArrowLeft, Loader2, Check } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -63,24 +64,9 @@ export function Roadmap({ data }: { data: any }) {
         const roadmap = JSON.parse(data.roadmap);
         //const [currentDay, setCurrentDay] = useState<number>(data.completed);
         const [currentDay, setCurrentDay] = useState<number>(5);
-        const [questions, setQuestions] = useState<any[]>([]);
         const [results, setResults] = useState<any[]>([]); // Store results after submission
         const [isSubmitting, setIsSubmitting] = useState(false); // Manage submission state
 
-        const getQuestions = async () => {
-                const result = await generateQuestions(roadmap[currentDay].task);
-                if (result.success) {
-                        toast.success("Questions generated successfully.");
-                        const questionsWithAnswers = result.data.map((q: any) => ({
-                                ...q,
-                                answer: "",
-                        }));
-                        setQuestions(questionsWithAnswers);
-                } else {
-                        toast.error("An error occurred while generating questions.");
-                        console.log(result.message);
-                }
-        };
 
         const handleAnswerChange = (index: number, value: string) => {
                 setQuestions((prevQuestions) => {
@@ -109,30 +95,34 @@ export function Roadmap({ data }: { data: any }) {
         };
 
         const [currentQuestion, setCurrentQuestion] = useState<number>(0);
+        const [totalDays, setTotalDays] = useState<number>(roadmap.length);
+        //const [progress, setProgress] = useState((currentDay / totalDays) * 100)
+        const [progress, setProgress] = useState(75)
 
         return (
                 <>
                         <div className="flex w-full justify-between items-start">
                                 <div className="flex flex-col gap-1">
-                                        <Button
-                                                variant={"secondary"}
-                                                className="bg-inherit text-primary font-bold w-fit"
-                                                disabled={currentDay == 0}
-                                        >
-                                                <ArrowLeft /> Previous Days
-                                        </Button>
-                                        <div className="px-5 w-screen">
-                                                <div className="flex flex-col gap-10 relative items-center justify-center">
+                                        <div className="px-5 w-[90vw] mx-auto">
+                                                <div className="flex gap-5 items-center justify-center">
+                                                        <h3 className="font-bold">Current Progress</h3>
+                                                        <div className="flex justify-between w-[80%] rounded-full bg-accent/40">
+                                                                <motion.div initial={{ width: 0 }} animate={{ width: 750 }} className={`progressbar bg-primary w-[75%] h-2 rounded-full`}></motion.div>
+                                                        </div>
+                                                </div>
+                                                <div className="flex flex-col gap-10 items-center justify-center mt-10">
                                                         {roadmap.map((day: any, index: number) => (
-                                                                <RoadmapButton
-                                                                        day={(index + 1).toString()}
-                                                                        points={day.points}
-                                                                        resources={day.resources}
-                                                                        value={index + 1}
-                                                                        variant={index <= currentDay ? "unlocked" : "locked"}
-                                                                        position={index % 2 == 0 ? "left" : "right"}
-                                                                        task={day.task}
-                                                                />
+                                                                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0, transition: { delay: index * 0.2 } }}>
+                                                                        <RoadmapButton
+                                                                                day={(index + 1).toString()}
+                                                                                points={day.points}
+                                                                                resources={day.resources}
+                                                                                value={index + 1}
+                                                                                variant={index < currentDay ? "completed" : index == currentDay ? "unlocked" : "locked"}
+                                                                                position={index % 2 == 0 ? "left" : "right"}
+                                                                                task={day.task}
+                                                                        />
+                                                                </motion.div>
                                                         ))}
                                                 </div>
                                                 {/* 
@@ -308,7 +298,7 @@ export function Roadmap({ data }: { data: any }) {
                                                 */}
                                         </div>
                                 </div>
-                        </div>
+                        </div >
                 </>
         );
 }
@@ -316,7 +306,7 @@ export function Roadmap({ data }: { data: any }) {
 type RoadmapButtonProps = {
         day: string;
         points: number;
-        resources: any[];
+        resources: any;
         value: number;
         variant: "locked" | "unlocked" | "completed";
         position: string;
@@ -324,12 +314,29 @@ type RoadmapButtonProps = {
 }
 
 function RoadmapButton({ day, points, resources, value, variant, position, task }: RoadmapButtonProps) {
+        const [questions, setQuestions] = useState<any[]>([]);
+        const getQuestions = async () => {
+                const result = await generateQuestions(task);
+                if (result.success) {
+                        toast.success("Questions generated successfully.");
+                        const questionsWithAnswers = result.data.map((q: any) => ({
+                                ...q,
+                                answer: "",
+                        }));
+                        setQuestions(questionsWithAnswers);
+                } else {
+                        toast.error("An error occurred while generating questions.");
+                        console.log(result.message);
+                }
+        };
+
+        const [currentQuestion, setCurrentQuestion] = useState(0)
         return (
                 <Popover>
                         <PopoverTrigger asChild>
                                 <div className={`${position == 'left' && '-ml-[10rem]'} ${position == 'right' && '-mr-[10rem]'} ${variant == "locked" && 'bg-accent/40'} ${(variant == 'unlocked' || variant == "completed") && 'bg-primary'} cursor-pointer w-24 h-24 flex items-center justify-center p-8 font-extrabold text-xl rounded-full`}>
                                         {variant == "locked" && <h3>{<Lock />}</h3>}
-                                        {variant == "completed" && <h3>{<Check />}</h3>}
+                                        {variant == "completed" && <h3>{<Check size={32} />}</h3>}
                                         {variant == "unlocked" && (
                                                 <div className="flex flex-col gap-[-5px] justify-center items-center">
                                                         <h3 className="uppercase text-sm tracking-wide">Day</h3>
@@ -338,14 +345,95 @@ function RoadmapButton({ day, points, resources, value, variant, position, task 
                                         )}
                                 </div>
                         </PopoverTrigger>
-                        <PopoverContent side="top">
-                                <div className="flex flex-col gap-3">
-                                        <h3 className="font-bold">Day {day}</h3>
-                                        <p className="text-neutral-400">{task}</p>
-                                        <Button className="w-full bg-inherit text-primary font-bold hover:bg-inherit">View Resources</Button>
-                                        <Button className="font-bold">Mark as Completed</Button>
+                        {variant != "locked" && (
+                                <PopoverContent side="top">
+                                        <div className="flex flex-col gap-3">
+                                                <h3 className="font-extrabold text-lg">Day {day}</h3>
+                                                <p className="text-neutral-400">{task}</p>
+                                                <Dialog>
+                                                        <DialogTrigger>
+                                                                <Button className="w-full bg-inherit text-primary font-bold hover:bg-inherit">View Resources</Button>
+                                                        </DialogTrigger>
+                                                        <DialogContent>
+                                                                <h3 className="font-extrabold text-lg">Resources for Day {day}</h3>
+
+                                                                {resources.map((resource: any) => (
+                                                                        <ResourceButton name={resource.name} link={resource.link} />
+                                                                ))}
+                                                        </DialogContent>
+                                                </Dialog>
+                                                <Button className="font-bold" onClick={() => {
+                                                        if (questions.length == 0) {
+                                                                getQuestions()
+                                                        }
+                                                }
+                                                } disabled={variant == "completed"}>{variant == "completed" ? (<>
+                                                        <Check />
+                                                        <h3>Completed</h3>
+                                                </>) : (
+                                                        <Sheet>
+                                                                <SheetTrigger asChild>
+                                                                        <h3>Mark as Completed</h3>
+                                                                </SheetTrigger>
+                                                                <SheetContent>
+                                                                        <SheetHeader>
+                                                                                <div className="flex flex-col gap-2">
+                                                                                        <h3 className="font-extrabold text-xl">Day {day} Quiz</h3>
+                                                                                        <p className="text-neutral-400">{task.slice(0, 40) + '...'}</p>
+                                                                                        <Separator className="mt-1" />
+                                                                                </div>
+                                                                        </SheetHeader>
+                                                                        <div className="flex flex-col gap-3">
+                                                                                {questions.length > 0 ? (
+                                                                                        <>
+                                                                                                <h3 className="font-bold text-md">{questions[currentQuestion].question}</h3>
+                                                                                                <FloatingLabelTextarea label="Answer" onChange={(e) => console.log(e.target.value)} />
+                                                                                                <div className="flex gap-2 w-full">
+                                                                                                        <Button className="" disabled={currentQuestion == 0} size={"icon"} onClick={() => setCurrentQuestion(currentQuestion - 1)}><ChevronLeft /></Button>
+                                                                                                        <Button className={`${(currentQuestion == questions.length - 1) && 'hidden'}`} size={"icon"} onClick={() => setCurrentQuestion(currentQuestion + 1)}><ChevronRight /></Button>
+                                                                                                </div>
+                                                                                        </>
+                                                                                ) : (
+                                                                                        <h3>Loading Questions</h3>
+                                                                                )}
+
+                                                                        </div>
+
+                                                                        <SheetFooter className="relative">
+                                                                                {(currentQuestion == questions.length - 1) && (
+                                                                                        <Button className="w-full" onClick={() => { }}>
+                                                                                                Submit Quiz
+                                                                                        </Button>
+                                                                                )}
+                                                                        </SheetFooter>
+                                                                </SheetContent>
+                                                        </Sheet>
+                                                )}</Button>
+                                        </div>
+                                </PopoverContent>
+                        )
+                        }
+                </Popover >
+        )
+}
+
+type ResourceButtonProps = {
+        link: string;
+        name: string;
+}
+
+function ResourceButton({ name, link }: ResourceButtonProps) {
+        return (
+                <Link href={link}>
+                        <div className="button w-full bg-accent/40 p-5">
+                                <div className="flex justify-between items-center">
+                                        <div>
+                                                <div className="font-bold">{name}</div>
+                                                <p className="text-neutral-400">{link.slice(0, 30) + '...'}</p>
+                                        </div>
+                                        <Button variant={"ghost"} size={"icon"}><ChevronRight /></Button>
                                 </div>
-                        </PopoverContent>
-                </Popover>
+                        </div>
+                </Link>
         )
 }
