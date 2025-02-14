@@ -9,8 +9,10 @@ import {
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { NewRoadmapSheet } from "./new-roadmap-dialog";
-import { Trash, ArrowLeft, Loader2 } from "lucide-react";
+import { Lock, Unlock } from "lucide-react";
+import { Trash, ArrowLeft, Loader2, Check } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { toast } from "sonner";
 import { Carousel, CarouselItem, CarouselContent, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
@@ -59,7 +61,8 @@ export function Roadmap({ data }: { data: any }) {
         }
 
         const roadmap = JSON.parse(data.roadmap);
-        const [currentDay, setCurrentDay] = useState<number>(data.completed);
+        //const [currentDay, setCurrentDay] = useState<number>(data.completed);
+        const [currentDay, setCurrentDay] = useState<number>(5);
         const [questions, setQuestions] = useState<any[]>([]);
         const [results, setResults] = useState<any[]>([]); // Store results after submission
         const [isSubmitting, setIsSubmitting] = useState(false); // Manage submission state
@@ -118,7 +121,21 @@ export function Roadmap({ data }: { data: any }) {
                                         >
                                                 <ArrowLeft /> Previous Days
                                         </Button>
-                                        <div className="px-5">
+                                        <div className="px-5 w-screen">
+                                                <div className="flex flex-col gap-10 relative items-center justify-center">
+                                                        {roadmap.map((day: any, index: number) => (
+                                                                <RoadmapButton
+                                                                        day={(index + 1).toString()}
+                                                                        points={day.points}
+                                                                        resources={day.resources}
+                                                                        value={index + 1}
+                                                                        variant={index <= currentDay ? "unlocked" : "locked"}
+                                                                        position={index % 2 == 0 ? "left" : "right"}
+                                                                        task={day.task}
+                                                                />
+                                                        ))}
+                                                </div>
+                                                {/* 
                                                 <h3 className="text-3xl font-extrabold">Day {currentDay + 1}</h3>
                                                 <Separator className="my-3" />
 
@@ -288,7 +305,47 @@ export function Roadmap({ data }: { data: any }) {
                                                 </DialogFooter>
                                         </DialogContent>
                                 </Dialog>
+                                                */}
+                                        </div>
+                                </div>
                         </div>
                 </>
         );
+}
+
+type RoadmapButtonProps = {
+        day: string;
+        points: number;
+        resources: any[];
+        value: number;
+        variant: "locked" | "unlocked" | "completed";
+        position: string;
+        task: string;
+}
+
+function RoadmapButton({ day, points, resources, value, variant, position, task }: RoadmapButtonProps) {
+        return (
+                <Popover>
+                        <PopoverTrigger asChild>
+                                <div className={`${position == 'left' && '-ml-[10rem]'} ${position == 'right' && '-mr-[10rem]'} ${variant == "locked" && 'bg-accent/40'} ${(variant == 'unlocked' || variant == "completed") && 'bg-primary'} cursor-pointer w-24 h-24 flex items-center justify-center p-8 font-extrabold text-xl rounded-full`}>
+                                        {variant == "locked" && <h3>{<Lock />}</h3>}
+                                        {variant == "completed" && <h3>{<Check />}</h3>}
+                                        {variant == "unlocked" && (
+                                                <div className="flex flex-col gap-[-5px] justify-center items-center">
+                                                        <h3 className="uppercase text-sm tracking-wide">Day</h3>
+                                                        <h3 className="text-3xl -mt-1">{value}</h3>
+                                                </div>
+                                        )}
+                                </div>
+                        </PopoverTrigger>
+                        <PopoverContent side="top">
+                                <div className="flex flex-col gap-3">
+                                        <h3 className="font-bold">Day {day}</h3>
+                                        <p className="text-neutral-400">{task}</p>
+                                        <Button className="w-full bg-inherit text-primary font-bold hover:bg-inherit">View Resources</Button>
+                                        <Button className="font-bold">Mark as Completed</Button>
+                                </div>
+                        </PopoverContent>
+                </Popover>
+        )
 }

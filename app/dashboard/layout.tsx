@@ -6,8 +6,9 @@ import ProtectedRoute from "@/components/auth/protected-route-wrapper";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import logout from "@/actions/logout";
 import { usePathname } from "next/navigation";
-import { Blocks, Plus, ChevronDown, Users, Ellipsis } from "lucide-react";
+import { Blocks, Plus, ChevronDown, Users, Ellipsis, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Roadmap } from "@/components/roadmap";
 import {
         SidebarProvider,
@@ -78,7 +79,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 const fetchRoadmaps = async () => {
                         try {
                                 const client = await createClient();
-                                const { data, error } = await client.from("roadmaps").select("*");
+                                const { data, error } = await client.from("roadmaps").select("*").eq("created_by", email);
                                 if (error) {
                                         console.error("Error fetching roadmaps:", error.message);
                                 } else {
@@ -152,10 +153,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                         <SidebarGroupContent>
                                                                 <SidebarMenu>
                                                                         <SidebarMenuItem>
-                                                                                <SidebarMenuButton tooltip={"Dashboard"}>
-                                                                                        <Blocks /> Dashboard
-                                                                                </SidebarMenuButton>
+                                                                                <Link href={"/dashboard"}>
+                                                                                        <SidebarMenuButton tooltip={"Dashboard"}>
+                                                                                                <Blocks /> Dashboard
+                                                                                        </SidebarMenuButton>
+                                                                                </Link>
                                                                         </SidebarMenuItem>
+
                                                                         <SidebarMenuItem>
                                                                                 <SettingsModal />
                                                                         </SidebarMenuItem>
@@ -173,6 +177,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                                                 <NewCommunityDialog email={email} />
                                                                         </SidebarMenuItem>
                                                                 </SidebarMenu>
+                                                        </SidebarGroupContent>
+                                                </SidebarGroup>
+                                                <SidebarGroup>
+                                                        <SidebarGroupLabel>Leaderboard</SidebarGroupLabel>
+                                                        <SidebarGroupContent>
+                                                                <SidebarMenuItem >
+                                                                        <SidebarMenuButton asChild tooltip={"Leaderboard"}>
+                                                                                <Link href={"/leaderboard"}>
+                                                                                        <Trophy /> Leaderboard
+                                                                                </Link>
+                                                                        </SidebarMenuButton>
+                                                                </SidebarMenuItem>
+
                                                         </SidebarGroupContent>
                                                 </SidebarGroup>
                                         </SidebarContent>
@@ -214,7 +231,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                                 </div>
                                         </div>
                                         <div className="p-3 px-10">
-                                                {roadmaps && <Roadmap data={roadmaps[selectedRoadmap]} />}
+                                                {(roadmaps && path.endsWith("dashboard")) && <Roadmap data={roadmaps[selectedRoadmap]} />}
                                                 {children}
                                         </div>
                                 </main>

@@ -1,6 +1,6 @@
 "use server"
 import { createClient } from "@/utils/supabase/server"
-import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'
+import { GoogleGenerativeAI, SchemaType, DynamicRetrievalMode } from '@google/generative-ai'
 
 if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
         throw new Error("NEXT_PUBLIC_GEMINI_API_KEY is not defined")
@@ -30,7 +30,7 @@ export async function generateQuestions(topic: string) {
                 generationConfig: {
                         responseMimeType: 'application/json',
                         responseSchema: schema
-                }
+                },
         })
 
         const prompt = `The user has recently studied ${topic}. Generate 5 subjective questions to test their knowledge.`
