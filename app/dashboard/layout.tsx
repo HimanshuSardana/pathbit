@@ -197,7 +197,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                         <SidebarFooter className="bg-sidebar-accent/50">
                                                 <SidebarMenuButton size="lg" className="focus:bg-inherit flex justify-between">
                                                         <div className="flex gap-3 justify-between items-center">
-                                                                <Avatar>
+                                                                <Avatar className="rounded-none">
                                                                         <AvatarFallback>{initials}</AvatarFallback>
                                                                 </Avatar>
                                                                 <div className="flex flex-col">
@@ -224,14 +224,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                         </SidebarFooter>
                                 </Sidebar>
                                 <main className="w-full">
-                                        <div className="nav w-full px-3 h-16 flex items-center">
+                                        <div className="nav w-full px-3 h-16 flex items-center fixed top-0 bg-background border-b">
                                                 <div className="flex flex-row gap-3 items-center">
                                                         <SidebarTrigger />
                                                         <Separator orientation="vertical" />
                                                         <h3 className="text-sm font-bold">Dashboard</h3>
                                                 </div>
                                         </div>
-                                        <motion.div className="p-3 px-10" layout>
+                                        <motion.div className="p-3 px-10 mt-20" layout>
                                                 {(roadmaps && path.endsWith("dashboard")) && <Roadmap data={roadmaps[selectedRoadmap]} />}
                                                 {children}
                                         </motion.div>
